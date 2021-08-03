@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form</title>
+</head>
+<body>
+  <h2>FORM</h2>
+  <form action="#">
+    <p>주문서를 작성하여 주십시오</p>
+    <label for="name">이름:</label>
+    <input type="text" id="name" name="name" placeholder="이름을 입력하세요." required><br>
+    <label for="date">날짜:</label>
+    <input type="date" id="date" name="date" required><br>
+
+    <h3>1. 샌드위치 선택</h3>
+    <div>
+      <input type="radio" name="sandwich" id="sandwich-1" value="1" checked>
+      <label for="sandwich-1">에그마요</label><br>
+      
+      <input type="radio" name="sandwich" id="sandwich-2" value="2">
+      <label for="sandwich-2">이탈리안 비엠티</label><br>
+    
+      <input type="radio" name="sandwich" id="sandwich-3" value="3">
+      <label for="sandwich-3">터키 베이컨 아보카도</label><br>
+    </div>
+    <hr>
+
+    <h3>2. 사이즈 선택</h3>
+    <div>
+      <input id="size" type="number" value="30" max="30" min="15" step="15">
+    </div>
+    <hr>
+
+    <h3>3. 빵</h3>
+    <select name="bread" id="bread">
+      <option value="1">허니오트</option>
+      <option value="2">위트</option>
+      <option value="3">화이트</option>
+      <option value="4">플랫</option>
+      <option value="5">오트밀</option>
+    </select>
+    <hr>
+
+    <h3>4. 야채/소스</h3>
+    <input type="checkbox" name="source" id="source-1" value="1"><label for="source-1">토마토</label><br>
+    <input type="checkbox" name="source" id="source-2" value="2"><label for="source-2">오이</label><br>
+    <input type="checkbox" name="source" id="source-3" value="3"><label for="source-3">할라피뇨</label><br>
+    <input type="checkbox" name="source" id="source-4" value="4"><label for="source-4">핫칠리</label><br>
+    <input type="checkbox" name="source" id="source-5" value="5"><label for="source-5">바베큐</label><br>
+    <br>
+    <input type="submit" value="submit">
+  </form>
+</body>
+</html>
