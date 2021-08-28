@@ -1,6 +1,5 @@
 import logging
 from threading import Thread
-import time
 
 
 def work(name, r):
