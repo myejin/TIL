@@ -1,7 +1,7 @@
-## :bulb: 코루틴
+## :bulb: 네이티브 코루틴
 
-- asyncio 응용 프로그램을 작성하는 기본 방법
-- async/await 문법으로 선언되었다.
+- `python 3.5`에서 코루틴을 명시적으로 지정하는 `async/await ` 키워드 추가
+- <a href="https://wikidocs.net/16069" style="text-decoration:none">제너레이터 기반 코루틴 (함수 내 yield 유무로 결정)</a>과 비교하기 위한 개념
 - 코루틴 호출만으로 실행이 예약되는 것은 아니다.
 
 
@@ -129,8 +129,8 @@ asyncio.run(main())
 - 비동기 연산의 <b>최종 결과</b>를 나타내는 <b>저수준</b> 어웨이터블 객체
 - Future 객체 기다린다?
   - 코루틴이 Future가 다른 곳에서 해결될 때까지 기다리는 것
-
 - async/await 와 <b>콜백 기반 코드</b>를 함께 사용하려면 asyncio의 Future 객체가 필요하다. 
+- `concurrent` (python 3.2) 방식의 `future` ? <a href="https://github.com/myejin/TIL/blob/master/Thread/%EB%A9%80%ED%8B%B0%EC%8A%A4%EB%A0%88%EB%93%9C.md" style="text-decoration:none"> :heavy_check_mark: `이해하기`</a> 
 
 <br><br>
 
@@ -190,6 +190,10 @@ asyncio.run(main())
 
 <br>
 
+---
+
+(..공부중..)
+
 #### <b> `shield`</b> (*aws, loop=None)
 
 - 어웨이터블 객체를 취소로부터 보호합니다.
@@ -202,6 +206,4 @@ asyncio.run(main())
 ### 참고
 
 - <a href="https://docs.python.org/ko/3/library/asyncio-task.html"> `https://docs.python.org/ko/3/library/asyncio-task.html`</a>
-- <a href="https://blog.humminglab.io/python-coroutine-programming-1/"> `https://blog.humminglab.io/python-coroutine-programming-1/`</a>
-- <a href="https://blog.humminglab.io/python-coroutine-programming-2/"> `https://blog.humminglab.io/python-coroutine-programming-2/`</a>
 
