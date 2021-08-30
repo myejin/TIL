@@ -1,7 +1,7 @@
 ## :bulb: 네이티브 코루틴
 
 - `python 3.5`에서 코루틴을 명시적으로 지정하는 `async/await` 키워드 추가
-- <a href="https://wikidocs.net/16069" style="text-decoration:none">제너레이터 기반 코루틴 (함수 내 yield 유무로 결정)</a>과 비교하기 위한 개념
+- <a href="https://github.com/myejin/TIL/blob/master/Thread/generator_coroutine.md" style="text-decoration:none">제너레이터 기반 코루틴 (함수 내 yield 유무로 결정)</a>과 비교하기 위한 개념
 - 코루틴 호출만으로 실행이 예약되는 것은 아니다.
 
 
