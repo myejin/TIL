@@ -1,6 +1,6 @@
 ## :bulb: 네이티브 코루틴
 
-- `python 3.5`에서 코루틴을 명시적으로 지정하는 `async/await ` 키워드 추가
+- `python 3.5`에서 코루틴을 명시적으로 지정하는 `async/await` 키워드 추가
 - <a href="https://wikidocs.net/16069" style="text-decoration:none">제너레이터 기반 코루틴 (함수 내 yield 유무로 결정)</a>과 비교하기 위한 개념
 - 코루틴 호출만으로 실행이 예약되는 것은 아니다.
 
@@ -77,7 +77,7 @@ asyncio.run(main())
 ## :bulb: 어웨이터블
 
 - 어웨이터블 객체 : `await` 표현식에서 사용될 수 있는 객체 
-  - 세가지 유형 : `코루틴`, `태스크`, `퓨처` 
+  - 세가지 유형 : <b>`코루틴`</b>, <b>`태스크`</b>, <b>`퓨처`</b> 
 
 <br>
 
@@ -130,11 +130,74 @@ asyncio.run(main())
 - Future 객체 기다린다?
   - 코루틴이 Future가 다른 곳에서 해결될 때까지 기다리는 것
 - async/await 와 <b>콜백 기반 코드</b>를 함께 사용하려면 asyncio의 Future 객체가 필요하다. 
-- `concurrent` (python 3.2) 방식의 `future` ? <a href="https://github.com/myejin/TIL/blob/master/Thread/%EB%A9%80%ED%8B%B0%EC%8A%A4%EB%A0%88%EB%93%9C.md" style="text-decoration:none"> :heavy_check_mark: `이해하기`</a> 
+  - `concurrent` (python 3.2) 방식의 `future` ? <a href="https://github.com/myejin/TIL/blob/master/Thread/threading_concurrent_.md" style="text-decoration:none"> :heavy_check_mark: `이해하기`</a> 
 
+```python
+import time
+import asyncio
+from asyncio.tasks import gather
+from concurrent import futures
+
+
+async def sleep(executor=None):
+    """
+    run_in_executor : 서브루틴(time.sleep)을 코루틴처럼 실행시켜주는 메소드
+        - 반환값 : asyncio.Future 객체
+        - '비동기 처리' 처럼 보이지만 실제로는 스레딩을 이용한 것
+    """
+    loop = asyncio.get_event_loop()
+    await loop.run_in_executor(executor, time.sleep, 1)
+
+
+async def main():
+    executor = futures.ThreadPoolExecutor(max_workers=10000)
+    fs = [asyncio.ensure_future(sleep(executor)) for _ in range(10000)]
+    await asyncio.gather(*fs)
+
+
+if __name__ == "__main__":
+    print(f"{time.strftime('%X')} : 시작")
+    asyncio.run(main())
+    print(f"{time.strftime('%X')} : 종료")
+```
+- 결과
+```
+19:54:47 : 시작
+19:54:50 : 종료
+```
+- 10000개의 워커스레드가 돌지만, 1초가 아닌 <b>3초</b>가 걸렸다.
+  - `비동기 처리`처럼 보이지만 실제로는 `스레딩`을 이용한 것
+  - 컨텍스트 스위칭 비용(약 2초)가 발생했다. 
+<br><br>
+✔️: 코루틴과 비교
+```python
+import time
+import asyncio
+from asyncio.tasks import gather
+
+
+async def sleep():
+    await asyncio.sleep(1)
+
+
+async def main():
+    fs = [asyncio.ensure_future(sleep()) for _ in range(10000)]
+    await asyncio.gather(*fs)
+
+
+if __name__ == "__main__":
+    print(f"{time.strftime('%X')} : 시작")
+    asyncio.run(main())
+    print(f"{time.strftime('%X')} : 종료")
+```
+- 결과 (약 1초 소요)
+```
+20:03:45 : 시작
+20:03:46 : 종료
+```
 <br><br>
 
-### :bulb: asyncio 메소드
+## :bulb: asyncio 메소드
 
 #### <b> `gather`</b>(*aws, loop=None, return_exceptions=False)
 
@@ -188,9 +251,7 @@ asyncio.run(main())
 [2, 6, 24]
 ```
 
-<br>
-
----
+<br><br><br><br>
 
 (..공부중..)
 
@@ -206,4 +267,4 @@ asyncio.run(main())
 ### 참고
 
 - <a href="https://docs.python.org/ko/3/library/asyncio-task.html"> `https://docs.python.org/ko/3/library/asyncio-task.html`</a>
-
+- <a href="https://sjquant.tistory.com/14?category=797018"> `https://sjquant.tistory.com/14?category=797018`</a>
