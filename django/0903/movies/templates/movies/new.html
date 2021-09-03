@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+
+  <h1>NEW</h1>
+  <form action="{% url 'movies:create' %}" method="POST">
+    {% csrf_token %}
+    <label for="title">Title:</label>
+    <input type="text" name='title' id='title'>
+    
+    <br>
+    <label for="overview">Overview: </label>
+    <textarea name="overview" cols="30" rows="10"></textarea>
+    
+    <br>
+    <label for="poster_path">Poster_path: </label>
+    <input type="text" name='poster_path' id='poster_path'>
+    
+    <br>
+    <button>제출</button>
+  
+  </form>
+
+{% endblock  %}

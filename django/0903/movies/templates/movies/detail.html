@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+  <h1>DETAIL</h1>
+  <p>{{ movie.title }}</p>
+  <p>{{ movie.overview }}</p>
+  <p><img src={{ movie.poster_path }} alt="poster_path"></p>
+
+  <form action="{% url 'movies:edit' movie.pk %}" method="POST">
+    {% csrf_token %}
+    <button>수정</button>
+  </form>
+  <form action="{% url 'movies:delete' movie.pk %}" method="POST">
+    {% csrf_token %}
+    <button>삭제</button>
+  </form>
+{% endblock  %}
