@@ -53,5 +53,5 @@ res_matrix = str_distances.toarray()
 
 print(f"총 {shape[0]}개의 유사데이터 비교")
 data = np.ravel(res_matrix)
-plt.hist(data, bins=[0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1])
+plt.hist(data)
 plt.show()
