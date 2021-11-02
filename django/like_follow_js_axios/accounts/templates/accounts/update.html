@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>회원 정보 수정</h2>
+<hr>
+<form action="" method="post">
+{% csrf_token %}
+{{ form.as_p }}
+<button>수정하기</button>
+<a href="{% url 'articles:index' %}">INDEX로 가기</a>
+</form>
+
+{% endblock content %}

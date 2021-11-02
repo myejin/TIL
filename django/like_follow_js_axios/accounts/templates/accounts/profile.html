@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>{{ person.username }}님 프로필 페이지!</h1>
+
+<a href="{% url 'articles:index' %}">INDEX</a>
+<hr>
+팔로워 : <span id="cnt-follow">{{ person.followers.all|length }}</span> / 팔로잉 : {{ person.followings.all|length }}
+{% if user != person %}
+  <form id="follow-form" action="{% url 'accounts:follow' person.pk %}" method="POST">
+  {% csrf_token %}
+  {% if user in person.followers.all %}
+    <button id="follow-btn" style="background-color: red;">팔로우 취소</button>
+  {% else %}
+    <button id="follow-btn" style="background-color: white;">팔로우</button>
+  {% endif %}
+  </form>
+{% endif %}
+ 
+<hr>
+<h2>작성한 글 목록</h2>
+<ul>
+  {% for article in person.article_set.all %}
+  <li>
+    <a href="{% url 'articles:detail' article.pk %}">{{ article.title }}</a>
+  </li>
+  {% empty %}
+  <li>작성한 글이 없어요.</li>
+  {% endfor %}
+</ul>
+<hr>
+<h2>작성한 댓글 목록</h2>
+<ul>
+  {% for comment in person.comment_set.all %}
+    <li>{{ comment.content }}</li>
+  {% empty %}
+    <li>작성한 댓글이 없어요.</li>
+  {% endfor %}
+</ul>
+<hr>
+<h2>좋아요 누른 게시글 목록</h2>
+<ul>
+  {% for like_article in person.like_articles.all %}
+    <li>
+      <a href="{% url 'articles:detail' like_article.pk %}">{{ like_article.title }}</a>
+    </li>
+  {% empty %}
+    <li>좋아요를 아직 누르지 않았어요.</li>
+  {% endfor %}
+</ul>
+{% endblock content %}
+
+{% block script %}
+<script>
+  const followForm = document.querySelector("#follow-form")
+  followForm.addEventListener('submit', event => {
+    event.preventDefault()
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value
+    axios({
+      method: 'post',
+      url: '/accounts/{{ person.pk }}/follow/',
+      headers: {
+          'X-CSRFToken': csrftoken
+      }
+    })
+    .then(res => {
+      const btn = document.querySelector('#follow-btn')
+      const cntFollow = document.querySelector('#cnt-follow')
+      if(res.data.is_follow) {
+        btn.innerText = '팔로우 취소'
+        btn.style.backgroundColor = 'red'
+      } else {
+        btn.innerText = '팔로우'
+        btn.style.backgroundColor = 'white'
+      }
+      cntFollow.innerText = res.data.cnt_follow
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  })
+</script>
+{% endblock script %}
+
