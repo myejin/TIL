@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <h2>점심메뉴</h2>
+  <div id="menu">
+    <button v-on:click="isPress = true">Pick One</button>
+    <p>{{ choiceFood }}</p>
+  </div>
+  <hr>
+  <h2>로또</h2>
+  <div id="lotto">
+    <button v-on:click="isPress = true">Get Lucky Numbers</button>
+    <p>{{ mynum }}</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+  <script>
+    const menuApp = new Vue({
+      el: '#menu',
+      data: {
+        foodList: ['국밥', '치킨', '칼국수', '김밥', '피자', '족발'],
+        choiceFood: '뭐먹지',
+        isPress: false
+      },
+      watch: {
+        isPress: function() {
+          this.isPress = false
+          this.choiceFood = _.sampleSize(this.foodList, 1)[0]
+        }
+      }
+    })
+    const lottoApp = new Vue({
+      el: '#lotto',
+      data: {
+        nums: _.range(1, 46),
+        mynum: [0, 0, 0, 0, 0],
+        isPress: false
+      },
+      watch: {
+        isPress: function() {
+          this.isPress = false
+          this.mynum = _.sampleSize(this.nums, 5)
+        }
+      }
+    })
+  </script>
+</body>
+</html>
