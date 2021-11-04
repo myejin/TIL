@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .completed {
+      color: lightgray;
+      text-decoration: line-through;
+    }
+  </style>
+</head>
+<body>
+  <h1>TODO</h1>
+  <div id="app">
+    <select v-model="selected">
+      <option value="all">전체</option>
+      <option value="completed">완료</option>
+      <option value="inProgress">진행중</option>
+    </select>
+    <input type="text" v-model.trim="newContent">
+    <button @click="addTodo">+</button>
+    <hr>
+    <ul>
+      <li v-for="todo in selectedList" :key="todo.key">
+        <input type="checkbox" v-model="todo.isCompleted">
+        <span :class="{ completed: todo.isCompleted}">{{ todo.content }}</span>
+      </li>
+    </ul>
+    <button @click="deleteList">완료된 할 일 지우기</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    const STORAGE_KEY = 'TODO'
+    const todoStorage = {
+      save: function (todoList) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(todoList))
+      },
+      read: function () {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []
+      }
+    }
+
+    const app = new Vue({
+      el: '#app',
+      data: {
+        selected: 'all',
+        newContent: '',
+        todoList: todoStorage.read()
+      },
+      methods: {
+        addTodo: function () {
+          if(this.newContent) {
+            const data = {
+              key: Date.now(),
+              isCompleted: false,
+              content: this.newContent
+            }
+            this.todoList.push(data)          
+          }
+          this.newContent = ''
+        },
+        deleteList: function () {
+          this.todoList = this.todoList.filter(todo => !todo.isCompleted)
+        }
+      },
+      computed: {
+        selectedList: function () {
+          if(this.selected === 'all') {
+            return this.todoList
+          } 
+          else if(this.selected === 'completed') {
+            return this.todoList.filter(todo => todo.isCompleted)
+          } 
+          else {
+            return this.todoList.filter(todo => !todo.isCompleted)
+          }
+        }
+      },
+      watch: {
+        todoList: {
+          handler: function () {
+            todoStorage.save(this.todoList)
+          },
+          deep: true
+        }
+      }
+    })
+  </script>
+</body>
+</html>
