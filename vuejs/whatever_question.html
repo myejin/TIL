@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    <input v-model.trim="question" type="text">
+    <button @click="isValid">질문하기</button>
+    <hr>
+    <p>Answer: {{ answer }}</p>
+    <img :src="ansImg" height="250" alt="">
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    const app = new Vue({
+      el: '#app',
+      data: {
+        question: '',
+        answer: '',
+        ansImg: ''
+      },
+      methods: {
+        getAns: function () {
+          const URI = 'https://yesno.wtf/api'
+          axios.get(URI)
+            .then(res => {
+              this.answer = res.data.answer
+              this.ansImg = res.data.image
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        },
+        isValid: function () {
+          if(this.question[this.question.length - 1] === '?') {
+            this.getAns()
+          } else if (!this.question.length) {
+            alert('질문을 작성하세요.')
+          } else {
+            alert('문장은 ?로 끝나야해요.')
+          }
+        }
+      },
+      watch: {
+        question: this.isValid
+      }
+    })
+
+  </script>
+</body>
+</html>
