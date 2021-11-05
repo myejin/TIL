@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <br>
+  <h1>Movies</h1>
+    <div id="movieList" class="row row-cols-1 row-cols-md-3 g-4">
+    {% for movie in movies %}
+      <div class="col">
+        <div class="card h-100">
+          <a href="{% url 'movies:detail' movie.pk %}"><img src="{{ movie.poster_path }}" class="card-img-top" alt="포스터" height="300"></a>
+          <div class="card-body">
+            <h5 class="card-title">{{ movie.title }}</h5>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+  let pageNum = 2
+  document.addEventListener('scroll', function() {
+    const { scrollHeight, clientHeight, scrollTop} = document.documentElement
+    if (pageNum > Math.ceil({{ movies_cnt }} / 10)) {
+      return
+    }
+    if (scrollHeight - Math.round(scrollTop) == clientHeight) {
+      axios({
+        method: 'get',
+        url: `/movies/?page=${pageNum}`,
+        headers: { 'x-requested-with': 'XMLHttpRequest' }
+      })
+      .then(res => {
+        const movies = res.data
+        const movieList = document.querySelector('#movieList')
+
+        movies.forEach(movie => {
+          const movieDiv = document.createElement('div')
+          movieDiv.setAttribute('class', 'col')
+
+          movieDiv.innerHTML =
+          `<div class="card h-100">
+            <a href="/movies/${movie.pk}/"><img src="${movie.fields.poster_path}" class="card-img-top" alt="포스터" height="300"></a>
+            <div class="card-body">
+              <h5 class="card-title">${movie.fields.title}</h5>
+            </div>
+          </div>`
+
+          movieList.appendChild(movieDiv)
+        })
+        pageNum += 1
+      })
+      .catch(err => {
+        console.log(err)
+      })
+    }
+  })
+</script>
+{% endblock script %}

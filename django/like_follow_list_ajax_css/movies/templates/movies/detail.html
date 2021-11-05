@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <br>
+  <h2>{{ movie.title }}</h2>
+  <a href="{% url 'movies:index' %}">목록으로</a>
+  <hr>
+  <div class="row">
+    <span class="col-auto mb-3">
+      <img src="{{ movie.poster_path }}" alt="포스터" height="300">
+    </span>
+    <p class="col">{{ movie.overview }}</p>
+  </div>
+  <p>개봉일 : {{ movie.release_date }}</p>
+  <p>인기 : {{ movie.popularity }}</p>
+  <p>평점 수 : {{ movie.vote_count }}</p>
+  <p>평균 평점 : {{ movie.vote_average }}</p>
+  <p>장르 : {{ genres }}</p>
+  <hr>
+{% endblock %}

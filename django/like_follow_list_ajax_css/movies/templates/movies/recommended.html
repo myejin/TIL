@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <br>
+  <h1>추천 영화</h1>
+  <hr>
+  {% for movie in recommended_movies %}
+    <div>
+      <h3>{{ movie.title }}</h3>
+      <p>{{ movie.overview }}</p>
+      <a href="{% url 'movies:detail' movie.pk %}">[detail]</a>
+      <hr>
+    </div>
+  {% endfor %}
+{% endblock %}
