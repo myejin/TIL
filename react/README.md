@@ -92,3 +92,76 @@ const StatelessComponent = ({name='', company='Home'}) => {
 export default App;
 ```
 
+<br>
+
+> react-router 활용
+
+```
+$ npm i react-router-dom @types/react-router-dom
+```
+
+<br>
+
+> 예제 (v6)
+
+- `App.tsx`
+
+```tsx
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useParams, useNavigate, useLocation} from 'react-router-dom';
+
+const Post = () => {
+  const { postId } = useParams<{postId: string}>();
+  const { search } = useLocation();  // 쿼리스트링
+  const navigate = useNavigate();  // usehistory >> useNavigate 
+  
+  function goNextPost(): void {
+    const nextPostIt: number = Number(postId) + 1; 
+    navigate(`/posts/${nextPostIt}`);
+  }
+
+  return (
+    <div>
+      <h3>Post {postId}</h3>
+      <button onClick={goNextPost}>next post</button>
+      <p>쿼리스트링: { new URLSearchParams(search).get('query') }</p>
+    </div>
+  );
+};
+
+const NotFound = () => {
+  return (
+    <h3>Not Found</h3>
+  );
+};
+
+class App extends React.Component<{}, {}> {
+  render(): React.ReactNode {
+    return (
+      <Router>
+        <div className="App">
+          <div className="App-header">
+            <h2>Welcome to React</h2>
+          </div>
+          <nav>
+            <ul>
+              <li><Link to="/" >Home</Link></li>
+              <li><Link to="/intro" >소개</Link></li>
+              <li><Link to="/posts/1" >포스트</Link></li>
+            </ul>
+          </nav>
+          <Routes>  {/* Switch가 Routes 로 변경되었다. */}
+            <Route path="/" element={<h3>Home</h3>} />
+            <Route path="/intro" element={<h3>소개</h3>} />
+            <Route path="/posts/:postId" element={<Post />} />
+            <Route path="/*" element={<NotFound />} />
+          </Routes>
+        </div>
+      </Router>
+    );
+  }
+}
+
+export default App;
+```
+
