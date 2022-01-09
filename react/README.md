@@ -165,3 +165,383 @@ class App extends React.Component<{}, {}> {
 export default App;
 ```
 
+<br>
+
+> store (1) react-redux X / props O  
+
+- `index.tsx`
+
+```tsx
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import {createStore, Store} from 'redux';
+
+// 1) action 타입 
+const ADD_AGE = 'ADD_AGE';
+
+// 2) action creator
+export function addAge() {
+  return {
+    type: ADD_AGE
+  };
+}
+
+// 3) 리듀서 (평범한 함수)
+function ageApp(state: {age: number;} = {age: 27}, action: {type: string}) {
+  if (action.type === ADD_AGE) {
+    return {
+      age: state.age + 1
+    };
+  }
+  return state;
+}
+
+// 4) store
+const store: Store<{age: number;}> = createStore(ageApp);
+
+// store에서 뭔가 변화가 일어나면 다시 렌더링 하는 것
+store.subscribe(render);
+
+function render() {
+  ReactDOM.render(
+    <React.StrictMode>
+      <App store={store} />
+    </React.StrictMode>,
+    document.getElementById('root')
+  );
+}
+
+render();
+```
+
+- `App.tsx`
+
+```tsx
+import React from 'react';
+import logo from './logo.svg';
+import './App.css';
+import {Store} from 'redux';
+import {addAge} from './index';
+
+class App extends React.Component<{store: Store<{age: number;}>}, {}> {
+  render() {
+    const store = this.props.store;
+    const state = store.getState();
+
+    return (
+      <div className="App">
+        <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+          <p>
+            {state.age} 
+            <button onClick={() => {
+              store.dispatch(addAge()); 
+            }}>한해가 지났다.</button>
+          </p>
+        </header>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+
+<br>
+
+> store (2) react-redux X / props O  
+
+- `index.tsx`
+
+```tsx
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import {createStore, Store} from 'redux';
+
+// 1) action 타입 
+const ADD_AGE = 'ADD_AGE';
+
+// 2) action creator
+export function addAge() {
+  return {
+    type: ADD_AGE
+  };
+}
+
+// 3) 리듀서 (평범한 함수)
+function ageApp(state: {age: number;} = {age: 27}, action: {type: string}) {
+  if (action.type === ADD_AGE) {
+    return {
+      age: state.age + 1
+    };
+  }
+  return state;
+}
+
+// 4) store
+const store: Store<{age: number;}> = createStore(ageApp);
+
+ReactDOM.render(
+  <React.StrictMode>
+    <App store={store} />
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+```
+
+- `App.tsx`
+
+```tsx
+import React from 'react';
+import logo from './logo.svg';
+import './App.css';
+import {Store, Unsubscribe} from 'redux';
+import {addAge} from './index';
+
+class App extends React.Component<{store: Store<{age: number;}>}, {}> {
+  private _unsubscribe: Unsubscribe;
+  componentDidMount() {
+    const store = this.props.store;
+    this._unsubscribe = store.subscribe(() => {
+      this.forceUpdate();
+    });
+  }
+  componentWillUnmount() {
+    this._unsubscribe();
+  }
+
+  render() {
+    const store = this.props.store;
+    const state = store.getState();
+    return (
+      <div className="App">
+        <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+          <p>
+            {state.age} 
+            <button onClick={() => {
+              store.dispatch(addAge()); 
+            }}>한해가 지났다.</button>
+          </p>
+        </header>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+
+<br>
+
+> store (2) react-redux X / props X / context O  
+
+- `index.tsx`
+
+```tsx
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import * as PropTypes from 'prop-types';
+import {createStore, Store} from 'redux';
+
+// 1) action 타입 
+const ADD_AGE = 'ADD_AGE';
+
+// 2) action creator
+export function addAge() {
+  return {
+    type: ADD_AGE
+  };
+}
+
+// 3) 리듀서 (평범한 함수)
+function ageApp(state: {age: number;} = {age: 27}, action: {type: string}) {
+  if (action.type === ADD_AGE) {
+    return {
+      age: state.age + 1
+    };
+  }
+  return state;
+}
+
+// 4) store
+const store: Store<{age: number;}> = createStore(ageApp);
+
+// 5) provider 생성
+class Provider extends React.Component<{store: Store<{age: number;}>}, {}> {
+  static childContextTypes = {
+    store: PropTypes.object 
+  };
+  getChildContext() {
+    return {
+      store: this.props.store
+    };
+  }
+  render() {
+    return this.props.children as JSX.Element;
+  }
+}
+
+ReactDOM.render(
+  <React.StrictMode>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+```
+
+- `App.tsx`
+
+```tsx
+import React from 'react';
+import logo from './logo.svg';
+import './App.css';
+import * as PropTypes from 'prop-types';
+import {Unsubscribe} from 'redux';
+import {addAge} from './index';
+
+class App extends React.Component<{}, {}> {
+  static contextTypes = {
+    store: PropTypes.object
+  }; 
+  private _unsubscribe: Unsubscribe;
+  componentDidMount() {
+    const store = this.context.store;
+    this._unsubscribe = store.subscribe(() => {
+      this.forceUpdate();
+    });
+  }
+  componentWillUnmount() {
+    this._unsubscribe();
+  }
+
+  render() {
+    const store = this.context.store;
+    const state = store.getState();
+    return (
+      <div className="App">
+        <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+          <p>
+            {state.age} 
+            <button onClick={() => {
+              store.dispatch(addAge()); 
+            }}>한해가 지났다.</button>
+          </p>
+        </header>
+      </div>
+    );
+  }
+}
+
+export default App;
+```
+
+<br>
+
+> react-redux
+
+- provider 컴포넌트를 제공하는 모듈
+- `index.tsx`
+
+```tsx
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import {createStore, Store} from 'redux';
+import {Provider} from 'react-redux';
+
+// 1) action 타입 
+const ADD_AGE = 'ADD_AGE';
+
+// 2) action creator
+export function addAge() {
+  return {
+    type: ADD_AGE
+  };
+}
+
+// 3) 리듀서 (평범한 함수)
+function ageApp(state: {age: number;} = {age: 27}, action: {type: string}) {
+  if (action.type === ADD_AGE) {
+    return {
+      age: state.age + 1
+    };
+  }
+  return state;
+}
+
+// 4) store
+const store: Store<{age: number;}> = createStore(ageApp);
+
+ReactDOM.render(
+  <React.StrictMode>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+```
+
+- `App.tsx`
+
+```tsx
+import logo from './logo.svg';
+import './App.css';
+import {addAge} from './index';
+import {connect} from 'react-redux';
+
+interface AppProps {
+  age: number;
+  onAddClick(): void;
+}
+
+// stateless 함수로 변경 
+const App = (props: AppProps) => {
+  return (
+    <div className="App">
+      <header className="App-header">
+        <img src={logo} className="App-logo" alt="logo" />
+        <p>
+          {props.age} 
+          <button onClick={() => props.onAddClick()}>한해가 지났다.</button>
+        </p>
+      </header>
+    </div>
+  );
+}
+
+const mapStateToProps = (state: {age: number;}) => {
+  // App 컴포넌트에서만 쓰는 state 데이터 = 컨테이너
+  return {
+    age: state.age,
+  };
+};
+
+const mapDispatchToProps = (dispatch: Function) => {
+  return {
+    onAddClick: () => {
+      dispatch(addAge());
+    }
+  };
+}
+
+// connect 함수를 통해 컨테이너를 만들어준다. 
+const AppContainer = connect(
+  mapStateToProps,
+  mapDispatchToProps 
+)(App);
+
+export default AppContainer;
+```
+
