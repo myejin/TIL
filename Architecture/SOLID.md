@@ -75,8 +75,6 @@
   if __name__ == "__main__":
     Main.get_operations([1,2,3,4,5])
   ```
-  - 예시2
-    - 
 </br>
 
 ### 리스코프 치환 원리 (LSP)
