@@ -96,7 +96,7 @@
 - SRP 가 클래스의 단일책임을 강조했다면, ISP 는 인터페이스의 단일책임을 강조한다. 
   - 같은 문제를 다르게 해결할 수 있다.
   - SRP 는 하나의 역할만 하도록 다수의 클래스를 분리한다면, ISP 는 각 역할에 맞게 인터페이스로 분리한다.
-
+</br>
 
 ### 의존성 역정 원칙 (DIP)
 > Dependency Inversion Principle</br>
@@ -121,41 +121,36 @@
 
   const Parent = () => {
     const [value, setValue] = useState(''); 
-    return <Child value={value} setValue={setValue} />;
+    return <Child value={value} setValue={setValue} />; // 부모자식 간 의존성 존재 
   };
   
-  // 개선: 의존성 제거
+  // 개선: doAction 으로 변경해 의존성 제거
 
   interface ChildProps {
     value: string;
-    onChange?: (value: string) => void;
+    doAction?: (value: string) => void;
   }
-  const Child = ({ value, onChange }: ChildProps) => {
+  const Child = ({ value, doAction }: ChildProps) => {
       if (value !== 'apple') {
-        return onChange?.('banana');
+        return doAction?.('banana');
       } else {
-        return onChange?.('cake');
+        return doAction?.('cake');
       }
   };
   
   const Parent1 = () => {
     const [value, setValue] = useState('');
-    return <Child value={value} onChange={v => setValue(v)} />; // setValue 를 바로 넘겨주지 않는다. 
+    return <Child value={value} doAction={v => setValue(v)} />; // setValue 를 바로 넘겨주지 않는다. 
   };  
   const Parent2 = () => {
     const value = 'daddy'; // setValue 필요없음
-    return <Child value={value} onChange={v => console.log(v)} />; // 다른 로직을 주입해도 동작
+    return <Child value={value} doAction={v => console.log(v)} />; // 다른 로직을 주입해도 동작
   };
 </br>
 
-### 예제 참고하기 
-- https://brunch.co.kr/@springboot/30
-</br>
-
 ### 참고글
+- https://brunch.co.kr/@springboot/30
 - https://towardsdatascience.com/solid-coding-in-python-1281392a6a94
 - https://jaeyeong951.medium.com/%EA%B0%9D%EC%B2%B4%EC%A7%80%ED%96%A5-5%EC%9B%90%EC%B9%99-solid-ac7d4d660f4d
 - https://devlog-wjdrbs96.tistory.com/m/380
-
-
 
