@@ -20,145 +20,63 @@
 
 #### ✔️ Terraform 명령어 설치 
 ```bash
-# apt-get update && sudo apt-get install -y gnupg software-properties-common
-# wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee > /usr/share/keyrings/hashicorp-archive-keyring.gpg
-# gpg --no-default-keyring --keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg --fingerprint
-# echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee > /etc/apt/sources.list.d/hashicorp.list
-# apt update
-# apt-get install terraform
+~$ apt-get update && sudo apt-get install -y gnupg software-properties-common
+~$ wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee > /usr/share/keyrings/hashicorp-archive-keyring.gpg
+~$ gpg --no-default-keyring --keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg --fingerprint
+~$ echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee > /etc/apt/sources.list.d/hashicorp.list
+~$ apt update
+~$ apt-get install terraform
 ```
   <img width="400" alt="image" src="https://user-images.githubusercontent.com/42771578/212701940-f9c97828-6a6d-4491-860a-c1119f7de273.png">
 
 
 #### ✔️ awscli 설치
 ```bash
-# curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-# unzip awscliv2.zip 
-# sudo ./aws/install
+~$ curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+~$ unzip awscliv2.zip 
+~$ sudo ./aws/install
 ```
   <img width="600" alt="image" src="https://user-images.githubusercontent.com/42771578/212703436-cc3335b7-1b4c-4354-a1ee-a3758ab5b1c6.png">
 
 
 #### ✔️ eksctl 명령어 설치 
 ```bash
-# curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-# sudo mv /tmp/eksctl /usr/local/bin
+~$ curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+~$ sudo mv /tmp/eksctl /usr/local/bin
 ```
 <img width="300" alt="image" src="https://user-images.githubusercontent.com/42771578/212704050-16272754-22be-4228-a203-825375959236.png">
 
 #### ✔️ 환경변수 파일 다운로드 by Terraform 
 ```bash
-# git clone https://github.com/terraform-providers/terraform-provider-aws.git 
+~$ git clone https://github.com/terraform-providers/terraform-provider-aws.git
+~$ cp -rp ~/eks-getting-started ~/aws-eks 
 
-/home/ubuntu/terraform-provider-aws/examples/eks-getting-started# ls
-README.md  eks-cluster.tf  eks-worker-nodes.tf  outputs.tf  providers.tf  variables.tf  vpc.tf  workstation-external-ip.tf
+~/aws-eks$ ls
+README.md       eks-worker-nodes.tf  providers.tf  vpc.tf
+eks-cluster.tf  outputs.tf           variables.tf  workstation-external-ip.tf
 ```
-
-#### 🟠 Terraform 스크립트 살펴보기 
-
-eks-cluster.tf
-```
-# 
-# EKS Cluster Resources
-#  * IAM Role to allow EKS service to manage other AWS services
-#  * EC2 Security Group to allow networking traffic with EKS cluster
-#  * EKS Cluster
-#
-
-resource "aws_iam_role" "demo-cluster" {
-  name = "terraform-eks-demo-cluster"
-
-  assume_role_policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "eks.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-POLICY
-}
-  
-resource "aws_iam_role_policy_attachment" "demo-cluster-AmazonEKSClusterPolicy" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role       = aws_iam_role.demo-cluster.name
-}
-
-resource "aws_iam_role_policy_attachment" "demo-cluster-AmazonEKSVPCResourceController" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSVPCResourceController"
-  role       = aws_iam_role.demo-cluster.name
-}
-
-resource "aws_security_group" "demo-cluster" {
-  name        = "terraform-eks-demo-cluster"
-  description = "Cluster communication with worker nodes"
-  vpc_id      = aws_vpc.demo.id
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "terraform-eks-demo"
-  }
-}
-
-resource "aws_security_group_rule" "demo-cluster-ingress-workstation-https" {
-  cidr_blocks       = [local.workstation-external-cidr]
-  description       = "Allow workstation to communicate with the cluster API Server"
-  from_port         = 443
-  protocol          = "tcp"
-  security_group_id = aws_security_group.demo-cluster.id
-  to_port           = 443
-  type              = "ingress"
-}
-
-resource "aws_eks_cluster" "demo" {
-  name     = var.cluster-name
-  role_arn = aws_iam_role.demo-cluster.arn
-
-  vpc_config {
-    security_group_ids = [aws_security_group.demo-cluster.id]
-    subnet_ids         = aws_subnet.demo[*].id
-  }
-
-  depends_on = [
-    aws_iam_role_policy_attachment.demo-cluster-AmazonEKSClusterPolicy,
-    aws_iam_role_policy_attachment.demo-cluster-AmazonEKSVPCResourceController,
-  ]
-}  
-```
-
-eks-worker-nodes.tf 
-EKS Worker 노드에 대한 IAM role, NodeGroup AutoScaling, NodeGroup 값 
-
-outputs.tf 
-파일에 설정된 값을 통해 EKS 배포완료 후 정상적으로 배포되었음을 확인 
-
-providers.tf
-EKS 생성할 AWS KEY 값 
-
-variables.tf
-EKS 생성할 AWS region, EKS 클러스터 이름 값 
-
-vpc.tf
-EKS 가 사용할 Network 환경 구축 (VPC, Subnet, Route) 
 
 <br>
 
 ### EKS 배포 
 ```
+~/aws-eks$ terraform init
 ...
+Terraform has been successfully initialized!
+...
+
+ubuntu@ip-172-31-47-132:~/aws-eks$ terraform --version
+Terraform v1.3.7
+on linux_amd64
++ provider registry.terraform.io/hashicorp/aws v4.51.0
++ provider registry.terraform.io/hashicorp/http v3.2.1
+
+ubuntu@ip-172-31-47-132:~/aws-eks$ terraform apply
+Error: configuring Terraform AWS Provider: no valid credential sources for Terraform AWS Provider found.
+
 ```
 <br>
+
 ### EKS Cluster 배포 확인 
 - kubectl 명령어 설치 
 - EKS kubeconfig 파일
