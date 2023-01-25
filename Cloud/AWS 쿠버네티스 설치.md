@@ -20,6 +20,7 @@
 
 #### ✔️ Terraform 명령어 설치 
 ```bash
+# 참고 : https://www.hashicorp.com/official-packaging-guide
 ~$ apt-get update && sudo apt-get install -y gnupg software-properties-common
 ~$ wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee > /usr/share/keyrings/hashicorp-archive-keyring.gpg
 ~$ gpg --no-default-keyring --keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg --fingerprint
@@ -36,7 +37,7 @@
 ~$ unzip awscliv2.zip 
 ~$ sudo ./aws/install
 ```
-  <img width="600" alt="image" src="https://user-images.githubusercontent.com/42771578/212703436-cc3335b7-1b4c-4354-a1ee-a3758ab5b1c6.png">
+  <img width="580" alt="image" src="https://user-images.githubusercontent.com/42771578/212703436-cc3335b7-1b4c-4354-a1ee-a3758ab5b1c6.png">
 
 
 #### ✔️ eksctl 명령어 설치 
@@ -44,13 +45,14 @@
 ~$ curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
 ~$ sudo mv /tmp/eksctl /usr/local/bin
 ```
-<img width="300" alt="image" src="https://user-images.githubusercontent.com/42771578/212704050-16272754-22be-4228-a203-825375959236.png">
+<img width="410" alt="image" src="https://user-images.githubusercontent.com/42771578/212704050-16272754-22be-4228-a203-825375959236.png">
 
-#### ✔️ 환경변수 파일 다운로드 by Terraform 
+#### ✔️ 환경변수 파일 다운로드 및 설정 by Terraform 
 ```bash
 ~$ git clone https://github.com/terraform-providers/terraform-provider-aws.git
 ~$ cp -rp ~/eks-getting-started ~/aws-eks 
 
+# 복사한 파일 수정 
 ~/aws-eks$ ls
 README.md       eks-worker-nodes.tf  providers.tf  vpc.tf
 eks-cluster.tf  outputs.tf           variables.tf  workstation-external-ip.tf
@@ -59,32 +61,55 @@ eks-cluster.tf  outputs.tf           variables.tf  workstation-external-ip.tf
 <br>
 
 ### EKS 배포 
-```
+```bash
 ~/aws-eks$ terraform init
 ...
 Terraform has been successfully initialized!
 ...
 
-ubuntu@ip-172-31-47-132:~/aws-eks$ terraform --version
+~/aws-eks$ terraform --version
 Terraform v1.3.7
 on linux_amd64
 + provider registry.terraform.io/hashicorp/aws v4.51.0
 + provider registry.terraform.io/hashicorp/http v3.2.1
 
-ubuntu@ip-172-31-47-132:~/aws-eks$ terraform apply
-Error: configuring Terraform AWS Provider: no valid credential sources for Terraform AWS Provider found.
+~/aws-eks$ terraform apply
+...
+aws_eks_cluster.hj: Creation complete after 8m25s [id=terraform-eks-hj]
+...
+aws_eks_node_group.hj: Creation complete after 2m51s [id=terraform-eks-hj:hj]
+Apply complete! Resources: 18 added, 0 changed, 0 destroyed.
 
+Outputs:
+...
+EOT
 ```
 <br>
 
-### EKS Cluster 배포 확인 
-- kubectl 명령어 설치 
-- EKS kubeconfig 파일
+### EKS Cluster 배포 확인
 
+```bash 
+# kebectl 설치 
+~/aws-eks$ curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.23.7/2022-06-29/bin/linux/amd64/kubectl
+~/aws-eks$ chmod +x ./kubectl
+~/aws-eks$ mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+~/aws-eks$ echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
 
-EKS 에서는 마스터노드(=Control Plane)을 AWS 자체에서 관리하기 때문에,
-kubectl get nodes > 워커노드만 확인할 수 있다. 
-AWS에서 EC2가 하나 생성된 것을 볼 수 있다. 
+~/aws-eks$ kubectl version --short --client
+Client Version: v1.23.7-eks-4721010
+
+~/aws-eks$ aws configure
+...
+
+~/aws-eks$ aws eks update-kubeconfig --name terraform-eks-hj
+Added new context arn:aws:eks:us-west-2:093754923275:cluster/terraform-eks-hj to /home/ubuntu/.kube/config
+
+# AWS가 관리하는 Master 노드 제외, Worker 노드 확인 
+~/aws-eks$ kubectl get nodes
+NAME                                      STATUS   ROLES    AGE   VERSION
+ip-10-0-0-96.us-west-2.compute.internal   Ready    <none>   19m   v1.23.13-eks-fb459a0
+```
+ 
 <br> 
 
 ### AWS ALB Ingress 배포 준비 
