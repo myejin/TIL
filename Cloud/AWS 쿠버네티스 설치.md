@@ -114,26 +114,42 @@ ip-10-0-0-96.us-west-2.compute.internal   Ready    <none>   19m   v1.23.13-eks-f
 
 ### AWS ALB Ingress 배포 준비 
 
-EKS Ingress 를 생성할 때 애플리케이션 트래픽을 로드밸런싱하는 ALB 가 프로비저닝 된다.
+#### ✔️ ALB Ingress Controller 구성 (for ALB 사용) 
+```bash 
+# IAM OIDC 자격증명 공급자 생성
+~$ eksctl utils associate-iam-oidc-provider --region=us-west-2 --cluster=terraform-eks-hj --approve 
+~$ curl -o iam-policy.json https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/main/docs/install/iam_policy.json 
 
-ALB 사용을 위해 ALB Ingress Controller 를 구성하자! 
+# IAM Role "AWSLoadBalancerControllerIamPolicy" 생성 
+# AWS 로드밸런서 컨트롤러가 사용자를 대신하여 AWS API 를 호출하도록 허용한다. 
+~$ aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam-policy.json
+{
+    "Policy": {
+        "PolicyName": "AWSLoadBalancerControllerIAMPolicy",
+        "PolicyId": "{~}",
+        "Arn": "arn:aws:iam::{~}:policy/AWSLoadBalancerControllerIAMPolicy",
+        "Path": "/",
+        "DefaultVersionId": "v1",
+        "AttachmentCount": 0,
+        "PermissionsBoundaryUsageCount": 0,
+        "IsAttachable": true,
+        "CreateDate": "2023-02-06T12:16:29+00:00",
+        "UpdateDate": "2023-02-06T12:16:29+00:00"
+    }
+}
 
-IAM OIDC 자격증명 공급자 생성
+# IAM Role 기반 Service Account 생성
+~$ eksctl create iamserviceaccount --cluster=terraform-eks-hj --namespace=kube-system --name=aws-load-balancer-controller --attach-policy-arn=arn:aws:iam::{~}:policy/AWSLoadBalancerControllerIAMPolicy --override-existing-serviceaccounts --approve
 
-EKS 의 Service Account 에 IAM Role 을 적용하기 위해 IAM OIDC 자격증명 공급자를 생성한다.
+# Cert-Manager 배포 (for EKS 클러스터 내 TLS 인증서 프로비저닝) 
+~$ kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v1.9.1/cert-manager.yaml
 
-IAM Role 을 만들어준다. Role 이름은 AWSLoadBalancerControllerIAMPolicy 이며,
-이 Role 은 AWS 로드밸런서 컨트롤러가 사용자를 대신하여 AWS API 를 호출할 수 있도록 허용한다. 
+```
 
-Arn 값은 아래 Service Account 만드는 부분에서 사용해야하니 메모해둔다.
-
-위에서 생성한 IAM Role 을 기반으로 Service Account 를 생성해주고, 
-EKS 클러스터 내의 TLS 인증서를 자동으로 프로비저닝 하기위해 Cert-Manager 배포한다. 
+#### ✔️ VPC SubNet Tag
+> 컨트롤러가 서브넷을 자동으로 검색할 수 있도록 VPC 서브넷에 태깅 
 
 
-VPC Subnet Tag 
-ALB 리소스가 생성될 때, AWS 로드밸런서 컨트롤러가 서브넷을 자동으로 검색할 수 있도록
-Amazon EKS 클러스터에서 Amazon VPC 서브넷에 태깅한다. 
 
 EKS 클러스터에서 Ingress 를 생성할 때 권한오류를 방지하기 위해 IAM 의 EKS 클러스터 역할과
 EKS 노드역할에 AdministratorAccess Policy 를 추가한다. 
