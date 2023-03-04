@@ -1,4 +1,4 @@
-#### 저장소 패턴?
+### 저장소 패턴?
 
 - 데이터가 있는 저장소를 추상화하여 중앙집중처리 방식을 구성하고, 데이터 접근과 구현사항을 감춘다.
 - 모든 데이터가 메모리상에 존재하는 것처럼 가정한다.
@@ -8,7 +8,9 @@
 <img width="400" alt="image" src="https://user-images.githubusercontent.com/42771578/222875322-6de36dfe-dd1b-44ad-8479-e6cf6008dee8.png">
 출처: 도서 [파이썬으로 살펴보는 아키텍처 패턴]
 
-#### 문제 상황
+<br>
+
+### 문제 상황
 기존 운영하던 A서버의 레이어가 Controller - Service 로만 구성되어 있었고, 아래와 같은 문제가 있었음
 
 - 비즈니스 로직과 DB접근 로직이 강하게 결합되어 있음 
@@ -18,14 +20,17 @@
   - 보통 레이어 간 이동에 DTO를 사용하지만 A서버는 Response 데이터 외에 레이어 간 이동에는 dict 를 사용하고 있었다. 
   - 클라이언트로 반환되기 전까지는 데이터의 정보를 알기 어려웠고, 서버의 안정성은 물론 개발 생산성에도 부정적인 영향을 미쳤다. 
   - 데이터 정보에 대한 문제는 설계와 별개였지만, 저장소 패턴을 도입하면서 함께 해결하기로 함 
+<br>
 
-#### 개선 방향 
+### 개선 방향 
 
 서비스에서 DB 접근 로직을 분리하자!
 Repository 레이어를 추가하고 추상화된 인터페이스에 의존함으로써 "비즈니스 로직에만 집중"할 수 있는 구조를 만들자 
 DTO를 사용해 데이터의 값과 타입을 명확하게 명시하자 
 
-#### 결과
+<br>
+
+### 결과
 
 Service 와 Repository 레이어를 분리하고 인터페이스를 사용하여 결합도를 낮춘 유연한 구조를 만들었다. 
 DTO 를 통해 데이터가 어느 레이어에 있든 '값'과 '타입'을 확인할 수 있게 되었다. 
@@ -67,8 +72,10 @@ def get_name(repo, user_id):
   return name 
 ```
 <br>
+
 DTO 적용 과정
 단점 : DTO 를 생성하는 코드가 반복된다.
+
 ```python
 from dataclasses import dataclass 
 
@@ -84,7 +91,8 @@ class NameRepository(Repository):
     return name 
 ```
 <br>
-참고
-- https://daco2020.tistory.com/m/439
-- https://0391kjy.tistory.com/39
-- https://velog.io/@khh180cm/2.-%EC%A0%80%EC%9E%A5%EC%86%8C-%ED%8C%A8%ED%84%B4
+
+#### 참고
+- https://daco2020.tistory.com/m/439<br>
+- https://0391kjy.tistory.com/39<br>
+- https://velog.io/@khh180cm/2.-%EC%A0%80%EC%9E%A5%EC%86%8C-%ED%8C%A8%ED%84%B4<br>
