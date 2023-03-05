@@ -90,7 +90,7 @@ if __name__ == "__main__":
 - 메인스레드가 종료되면 즉시 종료되는 스레드
 - 백그라운드에서 실행된다.
 
-- <a href="https://github.com/myejin/TIL/blob/master/Thread/multi-thread.py">:memo: 코드</a>  
+- <a href="https://github.com/myejin/TIL/blob/master/Thread/threading_test.py">:memo: 코드</a>  
 
 - 결과
 
