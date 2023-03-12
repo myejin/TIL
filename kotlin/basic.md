@@ -52,7 +52,7 @@ fun main() {
 }
 ```
 
-### ~조건문~이 아닌 조건식 - if, when
+### ~~조건문~~이 아닌 조건식 - if, when
 ```kotlin
 fun main() {
     var i = 7
@@ -190,4 +190,132 @@ fun main() { // 탑레벨 함수
 fun sum(a: Int, b: Int, c: Int = 0) = a + b + c
 
 class Person(private val name: String, var age: Int)
+```
+
+### data class 
+```kotlin
+fun main() {
+    val john = Person("John", 20)
+    val john2 = Person("John", 20)
+
+    println(john ) // Person@5674cd4d
+    println(john2) // Person@63961c42
+    println(john == john2) // false, 서로 다른 객체
+
+}
+
+class Person(val name: String, var age: Int)
+
+// data class 
+
+fun main() {
+    val john = Person("John", 20)
+    val john2 = Person("John", 20)
+
+    println(john ) // Person(name=John, age=20)
+    println(john2) // Person(name=John, age=20)
+    println(john == john2) // true 
+
+}
+
+data class Person(val name: String, var age: Int)
+```
+
+### class initializer, setter, getter
+```kotlin
+class Person(val name: String, var age: Int) {
+    var hobby = "축구" 
+        private set // 외부에서 set 불가
+        get() = "취미 : $field" // getter
+    
+    init {
+        print("init")
+    }
+    fun some() {
+        hobby = "농구"
+    }
+}
+```
+
+### class override - open 
+```kotlin
+open class Person // default 로 오버라이딩이 닫혀있으므로, open 키워드 추가
+class SuperMan: Person()
+
+abstract class Animal {
+    open fun move() { 
+        print("이동")
+    }
+}
+
+class Dog: Animal() {
+    override fun move() {
+        //
+    }
+}
+
+### interface 
+```kotlin
+interface Drawable {
+    fun draw()
+}
+
+abstract class Animal {
+    open fun move() {
+        //
+    }
+}
+
+class Dog: Animal(), Drawable {
+    override fun move() {
+        //
+    }
+
+    override fun draw() {
+        //
+    }
+}
+```
+
+### generic
+```kotlin
+
+fun main() {
+    val box = Box(10)
+    val box2 = Box("asd")
+
+    print(box.value)
+    print(box2.value)
+}
+
+class Box<T>(val value: T)
+```
+
+### callback func
+```kotlin
+fun main() {
+    myFunc(10, {
+        println("함수 호출")
+    })
+    // 파라미터가 함수인 경우는 밖으로 뺄 수 있다.
+    myFunc(10) {
+        println("함수 호출")
+    }
+
+    myFunc(10)
+}
+
+fun myFunc(a: Int, callBack: () -> Unit = {}) { // void 놉 Unit 사용
+    callBack()
+}
+```
+
+### suspend func (TBC..)
+```kotlin
+// suspend 함수는 다른 suspend 안에서 사용가능 하다.
+// 일반 main() 에서는 사용할 수 없다.
+// 코루틴 스코프를 만든다. lifecycleScope ,, etc
+suspend fun myFunc(a: Int, callBack: () -> Unit = {}) {
+    callBack()
+}
 ```
