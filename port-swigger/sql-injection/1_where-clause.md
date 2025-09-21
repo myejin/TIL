@@ -1,6 +1,8 @@
 ## 🕵️‍♂️ WHERE — 숨겨진 데이터 검색
 
-**목표:** 카테고리 필터를 우회하여 숨겨진 제품 데이터 확인 및 SQL Injection 이해
+**목표:** 카테고리 필터를 우회하여 숨겨진 제품 데이터 확인 및 SQL Injection 이해 <br />
+
+<img width="500" height="300" alt="image" src="https://github.com/user-attachments/assets/20213b7f-ae18-4d3e-8e3e-9a4be850ecd4" />
 
 <br />
 
