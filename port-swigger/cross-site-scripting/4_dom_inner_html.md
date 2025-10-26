@@ -1,6 +1,6 @@
 ## 🕵️‍♂️ 브라우저에서 DOM 에 JS 코드 추가하기
 
-**목표:** innerHTML 사용하여 코드에 악성 검색어 추가 <br />
+**목표:** innerHTML 사용하여 코드에 악성 코드 추가 <br />
 
 <img width="500" height="220" alt="image" src="https://github.com/user-attachments/assets/fb91ccf0-b3ac-44f2-91b3-da1bd2f26a88" />
 
