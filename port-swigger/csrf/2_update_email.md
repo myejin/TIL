@@ -15,10 +15,14 @@ POST 메서드로 데이터를 전송하고 있다. <br />
 예측 불가능한 파라미터 `csrf` 를 가지고 있다. <br />
 <img width="462" height="107" alt="image" src="https://github.com/user-attachments/assets/684ae88b-8fd9-49cf-b1fc-bdc0eb97a5e3" /><br /><br />
 
+**테스트 확인** <br />
+✓ 임의의 csrf 값을 넣고 POST 요청 시도: 제대로 토큰을 검증하고 있는지 <br />
+✓ csrf 제거하고 POST 요청 시도: 토큰이 없을 때 오류가 나는지  <br />
+✓ csrf 제거하고 GET 요청: GET 메서드로 데이터 전송이 가능한지 <br />
+
 취약점이 없어보이지만 <br />
-메서드 GET 으로 변경하고 명확한 파라미터인 `email` 만 유지하여, 이메일 주소를 변경할 수 있다. ✅ <br /><br />
 ✓ GET 에서는 CSRF 토큰을 검증하지 않는 경우가 많다.<br />
-✓ 불분명한 파라미터를 제외하고 데이터 변경을 요청할 수 있다.
+✓ 불분명한 파라미터를 제외하고 요청 가능할 수 있다.
 
 
 <br />
@@ -28,7 +32,7 @@ POST 메서드로 데이터를 전송하고 있다. <br />
 페이지가 로딩될 때, 자동으로 이메일 변경 양식을 제출할 수 있다.
 
 ```html
-<form action="https://YOUR-LAB-ID.web-security-academy.net/my-account/change-email">
+<form action="https://YOUR-LAB-ID.web-security-academy.net/my-account/change-email"> // GET 
     <input type="hidden" name="email" value="anything%40web-security-academy.net">
 </form>
 <script>
