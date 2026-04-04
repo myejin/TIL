@@ -45,3 +45,6 @@ MANIFEST
 
 # direnv
 .direnv/
+
+# db
+3_application/db/
