@@ -26,7 +26,7 @@ type QueryParams = {
 
 <br />
 
-**가변 상태(Mutable State)**
+**가변 상태(Mutable State)** <br />
 매 이터레이션(Iteration)마다 갱신되는 데이터다. 에이전트의 현재 상황을 대변한다. <br />
 예시: 현재까지의 대화 기록(messages), 현재 턴 수(turnCount), 다음 액션의 근거 (transition) 
 
@@ -45,7 +45,7 @@ type State = {
 ```
 
 
-왜 통째로 교체(Re-assignment)하는가? <br />
+**왜 통째로 교체(Re-assignment)하는가?** <br />
 - 원자성(Atomicity) 보장: 9개의 필드를 하나씩 수정하다가 3번째에서 에러가 나면, 데이터가 '반만 바뀐' 오염된 상태가 된다. 객체 전체를 새로 할당하면 "전부 성공하거나, 아예 안 바뀌거나" 둘 중 하나만 존재하게 된다.
 
 - React의 setState 철학: React의 불변성 유지 패턴을 백엔드 루프에 이식한 형태다. 상태 추적이 용이해진다.
